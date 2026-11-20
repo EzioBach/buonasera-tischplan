@@ -33,14 +33,19 @@ input[type=date],input[type=text],input[type=number],select{background:#161616;b
 .pickbar.show{display:flex}.pickbar .grow{flex:1;min-width:200px;font-size:.92rem}
 .main{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:14px;padding:14px;max-width:1600px;margin:0 auto}
 @media(max-width:1000px){.main{grid-template-columns:1fr}}
+.rooms{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.rt{border:1px solid var(--line);background:#121212;padding:9px 16px;cursor:pointer;font-weight:600;letter-spacing:.06em}
+.rt small{display:block;font-weight:400;font-size:.68rem;color:var(--mute);letter-spacing:.02em}
+.rt.on{border-color:var(--gold);background:rgba(190,159,108,.2)}
+.rt.add{border-style:dashed}
 .floorwrap{overflow-x:auto;border:1px solid var(--line);background:#101010}
 .floor{position:relative;width:100%;min-width:700px;aspect-ratio:16/10;container-type:inline-size;background:
  repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 2px,transparent 2px 60px),
  repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 2px,transparent 2px 60px),#141210}
 .floor.edit{outline:2px dashed var(--gold);outline-offset:-4px}
 .floor svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.tb{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:1.15;cursor:pointer;user-select:none;-webkit-user-select:none;border:2px solid var(--free);background:rgba(46,157,91,.2);overflow:hidden;padding:2px;transition:background .15s,border-color .15s}
-.tb.round{border-radius:50%}.tb:not(.round){border-radius:6px}
+.tb{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:1.15;cursor:pointer;user-select:none;-webkit-user-select:none;border:2px solid var(--free);background:rgba(46,157,91,.2);overflow:hidden;padding:2px;transition:background .15s,border-color .15s;border-radius:6px}
+.tb.round{border-radius:50%}
 .tb b{font-size:max(11px,1.7cqw);font-weight:600}
 .tb .sc{font-size:max(9px,1.15cqw);color:var(--mute)}
 .tb .gn{font-size:max(9px,1.2cqw);font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -52,7 +57,7 @@ input[type=date],input[type=text],input[type=number],select{background:#161616;b
 .tb.mine{box-shadow:0 0 0 3px #fff}
 .tb.etab{box-shadow:0 0 0 3px var(--gold)}
 .floor.edit .tb{cursor:move;touch-action:none}
-.legend{display:flex;gap:14px;flex-wrap:wrap;padding:8px 12px;font-size:.78rem;color:var(--mute);border-top:1px solid var(--line)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;padding:8px 12px;font-size:.78rem;color:var(--mute);border:1px solid var(--line);border-top:none}
 .dot{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 .side{display:flex;flex-direction:column;gap:12px}
 .panel{border:1px solid var(--line);background:rgba(12,12,12,.85)}
@@ -67,7 +72,7 @@ input[type=date],input[type=text],input[type=number],select{background:#161616;b
 .card .tabs{color:#8fe3b0;font-weight:600}
 .card .un{color:#ffb3bc;font-weight:600}
 .empty{padding:16px;color:var(--mute);font-size:.88rem}
-.edbar{display:none;padding:10px 12px;gap:8px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--line)}
+.edbar{display:none;padding:10px 12px;gap:8px;flex-wrap:wrap;align-items:center;border:1px solid var(--line);border-top:none}
 .edbar.show{display:flex}.edbar input[type=text]{width:90px}.edbar input[type=number]{width:70px}
 .tl{overflow-x:auto;padding:8px 12px 12px}
 .tl table{border-collapse:collapse;font-size:.72rem}
@@ -76,6 +81,7 @@ input[type=date],input[type=text],input[type=number],select{background:#161616;b
 .tl td{width:26px;height:20px;border:1px solid #1d1a16;background:rgba(46,157,91,.18)}
 .tl td.b{background:rgba(214,51,74,.6)}.tl td.now{outline:1px solid var(--gold)}
 .tl td.nm{width:auto;background:none;border:none;padding-right:8px;color:var(--txt);white-space:nowrap;font-weight:600}
+.tl td.rh{background:none;border:none;color:var(--gold);font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding-top:8px;width:auto}
 .ov{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;padding:14px}
 .ov.show{display:flex}
 .box{background:#0e0e0e;border:1px solid var(--gold);max-width:420px;width:100%;padding:22px}
@@ -120,21 +126,25 @@ input[type=date],input[type=text],input[type=number],select{background:#161616;b
 
 <div class="main">
   <div>
+    <div class="rooms" id="rooms"></div>
     <div class="floorwrap"><div class="floor" id="floor"><svg id="links" viewBox="0 0 100 62.5" preserveAspectRatio="none"></svg></div></div>
     <div class="legend">
       <span><i class="dot" style="background:var(--free)"></i>frei</span>
       <span><i class="dot" style="background:var(--soon)"></i>bald belegt (≤ 60 Min.)</span>
       <span><i class="dot" style="background:var(--busy)"></i>belegt</span>
       <span><i class="dot" style="background:var(--sel)"></i>gewählt</span>
-      <span style="margin-left:auto">Tipp: Reservierung antippen, dann einen oder mehrere Tische antippen.</span>
+      <span style="margin-left:auto">Reservierung antippen, dann einen oder mehrere Tische antippen (auch in anderen Räumen) = Tische zusammenstellen.</span>
     </div>
     <div class="edbar" id="edbar">
       <button class="btn sm" id="addt">+ Tisch</button>
       <span id="edsel" style="font-size:.8rem;color:var(--mute)">Tisch antippen zum Bearbeiten, ziehen zum Verschieben</span>
       <input type="text" id="ename" placeholder="Name">
       <input type="number" id="eseats" min="1" max="30" title="Plätze">
-      <select id="eshape"><option value="rect">eckig</option><option value="round">rund</option></select>
-      <button class="btn sm" id="edel">Löschen</button>
+      <select id="eshape"><option value="square">Quadrat</option><option value="rect">Rechteck quer</option><option value="vert">Rechteck hoch</option><option value="round">Rund</option></select>
+      <button class="btn sm" id="edel">Tisch löschen</button>
+      <span style="flex-basis:100%;height:0"></span>
+      <button class="btn sm" id="rren">Raum umbenennen</button>
+      <button class="btn sm" id="rdel">Raum löschen</button>
       <button class="btn sm" id="ereset">Standardplan</button>
     </div>
     <div class="panel" style="margin-top:12px">
@@ -172,6 +182,7 @@ input[type=date],input[type=text],input[type=number],select{background:#161616;b
 
 <script>
 const ENDPOINT="https://script.google.com/a/macros/buona-sera.de/s/AKfycbyae0jjk1eHKIeBJMMQXamE0u4ciOZ6Bc7OoNHm8Ui58XY8IIip3dwDvVs_lDzive5lmQ/exec";
+const LV=2;
 const SLOTS=[];for(let m=12*60;m<=22.5*60;m+=30)SLOTS.push(m);
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -182,27 +193,45 @@ const isoDate=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
 const H=62.5;
 
 function defaultLayout(){
-  const seats=[2,2,4,4,4,4,6,6,2,2,4,4,8,6];
-  const t=[];let i=0;
-  const cols=[8,26,44,62,80],rows=[6,20,34,48];
-  for(let r=0;r<rows.length&&i<seats.length;r++)for(let c=0;c<cols.length&&i<seats.length;c++){
-    t.push({id:"t"+(i+1),name:"T"+(i+1),seats:seats[i],x:cols[c],y:rows[r],shape:seats[i]<=2?"round":"rect"});i++;
-  }
-  return {tables:t};
+  const T=[];
+  const add=(id,name,room,seats,x,y,shape)=>T.push({id,name,seats,x,y,shape,room});
+  /* Saal 1 – nach Ihrem Plan: alle 2er-Quadrate, T7 hoch */
+  add("t1","T1","r1",2,14.1,51.3,"square");
+  add("t2","T2","r1",2,25.2,51.2,"square");
+  add("t3","T3","r1",2,36.3,52,"square");
+  add("t4","T4","r1",2,50.2,52,"square");
+  add("t5","T5","r1",2,63.1,52,"square");
+  add("t7","T7","r1",6,76,44,"vert");
+  add("t9","T9","r1",2,79.4,30.6,"square");
+  add("t10","T10","r1",2,55.7,30.3,"square");
+  /* Saal 2 – Startplan, bitte anpassen */
+  [15,35,55,75].forEach((x,i)=>{add("b"+(i+1),"B"+(i+1),"r2",2,x,14,"square");add("b"+(i+5),"B"+(i+5),"r2",2,x,38,"square");});
+  /* Obergeschoss – Startplan, bitte anpassen */
+  [15,35,55,75].forEach((x,i)=>{add("o"+(i+1),"O"+(i+1),"r3",2,x,14,"square");add("o"+(i+5),"O"+(i+5),"r3",2,x,38,"square");});
+  return {v:LV,rooms:[{id:"r1",name:"Saal 1",pre:"T"},{id:"r2",name:"Saal 2",pre:"B"},{id:"r3",name:"Obergeschoss",pre:"O"}],tables:T};
 }
+function validLayout(l){return l&&l.v===LV&&Array.isArray(l.rooms)&&l.rooms.length&&Array.isArray(l.tables);}
 let S={key:localStorage.getItem("bs_plan_key")||"",date:isoDate(new Date()),time:19*60,
-  dur:+(localStorage.getItem("bs_plan_dur")||120),layout:null,day:{assign:{},manual:[]},items:[],
+  dur:+(localStorage.getItem("bs_plan_dur")||120),layout:null,day:{assign:{},manual:[]},items:[],room:null,
   sel:null,pick:[],edit:false,etab:null,online:false,offline:false,tl:true};
-try{S.layout=JSON.parse(localStorage.getItem("bs_plan_layout")||"null");}catch(e){}
-if(!S.layout||!S.layout.tables)S.layout=defaultLayout();
+try{const l=JSON.parse(localStorage.getItem("bs_plan_layout2")||"null");if(validLayout(l))S.layout=l;}catch(e){}
+if(!S.layout)S.layout=defaultLayout();
+S.room=S.layout.rooms[0].id;
 $("dur").value=String(S.dur);
 
-function tsize(t){return t.shape==="round"?{w:8+t.seats*.8,h:(8+t.seats*.8)}:{w:7+t.seats*1.3,h:9};}
+function tsize(t){
+  const s=t.seats;
+  if(t.shape==="round"||t.shape==="square"){const d=6+s;return {w:d,h:d};}
+  if(t.shape==="vert")return {w:8,h:6+s*1.4};
+  return {w:6+s*1.5,h:8};
+}
+function clamp(t){const z=tsize(t);t.x=Math.round(Math.max(0,Math.min(100-z.w,t.x))*10)/10;t.y=Math.round(Math.max(0,Math.min(H-z.h,t.y))*10)/10;}
 function allRes(){return S.items.concat(S.day.manual.map(m=>Object.assign({src:"manual"},m)));}
 function resById(id){return allRes().find(r=>r.id===id);}
 function tabsOf(id){return (S.day.assign[id]||[]).filter(x=>S.layout.tables.some(t=>t.id===x));}
 function seatsOf(ids){return ids.reduce((a,id)=>{const t=S.layout.tables.find(t=>t.id===id);return a+(t?t.seats:0);},0);}
 function tname(id){const t=S.layout.tables.find(t=>t.id===id);return t?t.name:"?";}
+function roomOf(id){const t=S.layout.tables.find(t=>t.id===id);return t?t.room:null;}
 function active(r,T){const s=mins(r.time);return s<=T&&T<s+S.dur;}
 function overlap(a,b){const s1=mins(a.time),s2=mins(b.time);return s1<s2+S.dur&&s2<s1+S.dur;}
 function occ(tid,T){
@@ -225,7 +254,7 @@ async function api(params,post){
 function setNet(txt,cls){const n=$("net");n.textContent=txt;n.className="badge "+(cls||"");}
 let saveT1=null,saveT2=null;
 function saveLayout(){
-  try{localStorage.setItem("bs_plan_layout",JSON.stringify(S.layout));}catch(e){}
+  try{localStorage.setItem("bs_plan_layout2",JSON.stringify(S.layout));}catch(e){}
   clearTimeout(saveT1);saveT1=setTimeout(()=>push("layout",S.layout),500);
 }
 function saveDay(){
@@ -252,26 +281,35 @@ async function loadDay(){
     if(!l.ok){if(l.error==="key"){S.key="";localStorage.removeItem("bs_plan_key");askKey("Passwort falsch.");}setNet("Fehler","warn");render();return;}
     S.items=l.items||[];
     if(p.ok&&p.data){try{const d=JSON.parse(p.data);if(d&&d.assign){S.day=d;if(!S.day.manual)S.day.manual=[];}}catch(e){}}
-    if(lay.ok&&lay.data){try{const d=JSON.parse(lay.data);if(d&&d.tables&&d.tables.length){S.layout=d;localStorage.setItem("bs_plan_layout",lay.data);}}catch(e){}}
-    else if(lay.ok&&!lay.data){push("layout",S.layout);}
+    let got=false;
+    if(lay.ok&&lay.data){try{const d=JSON.parse(lay.data);if(validLayout(d)){S.layout=d;localStorage.setItem("bs_plan_layout2",lay.data);got=true;}}catch(e){}}
+    if(lay.ok&&!got)push("layout",S.layout);
+    if(!S.layout.rooms.some(r=>r.id===S.room))S.room=S.layout.rooms[0].id;
     S.online=true;setNet("verbunden","ok");
   }catch(e){setNet("offline – lokale Daten","warn");}
   render();
 }
 
 /* ---------- Render ---------- */
-function render(){renderTime();renderFloor();renderLists();renderStats();renderPickbar();renderTL();renderEd();}
+function render(){renderTime();renderRooms();renderFloor();renderLists();renderStats();renderPickbar();renderTL();renderEd();}
 function renderTime(){
   $("tval").textContent=hhmm(S.time);
   $("tslider").value=String(Math.max(0,SLOTS.indexOf(S.time)));
   $("date").value=S.date;
+}
+function renderRooms(){
+  $("rooms").innerHTML=S.layout.rooms.map(r=>{
+    const ts=S.layout.tables.filter(t=>t.room===r.id);
+    const free=ts.filter(t=>!occ(t.id,S.time).busy).length;
+    return "<button class='rt"+(r.id===S.room?" on":"")+"' data-r='"+esc(r.id)+"'>"+esc(r.name)+"<small>"+free+" von "+ts.length+" Tischen frei</small></button>";
+  }).join("")+(S.edit?"<button class='rt add' id='addroom'>+ Raum</button>":"");
 }
 function renderFloor(){
   const fl=$("floor");
   fl.className="floor"+(S.edit?" edit":"");
   fl.querySelectorAll(".tb").forEach(n=>n.remove());
   const mine=S.sel?tabsOf(S.sel):[];
-  S.layout.tables.forEach(t=>{
+  S.layout.tables.filter(t=>t.room===S.room).forEach(t=>{
     const sz=tsize(t),o=occ(t.id,S.time);
     const d=document.createElement("div");
     d.className="tb"+(t.shape==="round"?" round":"")+(o.busy?" busy":o.soon?" soon":"")+(S.pick.indexOf(t.id)>-1?" pick":"")+(mine.indexOf(t.id)>-1&&!S.edit?" mine":"")+(S.edit&&S.etab===t.id?" etab":"");
@@ -293,7 +331,7 @@ function drawLinks(){
   allRes().forEach(r=>{const a=tabsOf(r.id);if(a.length>1&&(active(r,S.time)||r.id===S.sel))groups[r.id]=a;});
   if(S.pick.length>1)groups["__pick"]=S.pick;
   Object.keys(groups).forEach(k=>{
-    const ts=groups[k].map(id=>S.layout.tables.find(t=>t.id===id)).filter(Boolean);
+    const ts=groups[k].map(id=>S.layout.tables.find(t=>t.id===id)).filter(t=>t&&t.room===S.room);
     const c=ts.map(t=>{const z=tsize(t);return [t.x+z.w/2,t.y+z.h/2];});
     for(let i=1;i<c.length;i++)h+="<line x1='"+c[i-1][0]+"' y1='"+c[i-1][1]+"' x2='"+c[i][0]+"' y2='"+c[i][1]+"' stroke='"+(k==="__pick"?"#4da3ff":"#ffffff")+"' stroke-width='5' stroke-linecap='round' stroke-dasharray='0.1 10' vector-effect='non-scaling-stroke'/>";
   });
@@ -340,10 +378,13 @@ function renderTL(){
   el.style.display=S.tl?"":"none";
   if(!S.tl)return;
   let h="<table><tr><th></th>"+SLOTS.map(m=>"<th data-m='"+m+"' class='"+(m===S.time?"now":"")+"'>"+(m%60===0?hhmm(m).slice(0,2):"·")+"</th>").join("")+"</tr>";
-  S.layout.tables.forEach(t=>{
-    h+="<tr><td class='nm'>"+esc(t.name)+" <span style='color:var(--mute);font-weight:400'>("+t.seats+")</span></td>";
-    SLOTS.forEach(m=>{const b=occ(t.id,m).busy;h+="<td class='"+(b?"b":"")+(m===S.time?" now":"")+"' data-m='"+m+"' title='"+(b?esc(b.name+" · "+b.pax):"frei")+"'></td>";});
-    h+="</tr>";
+  S.layout.rooms.forEach(rm=>{
+    h+="<tr><td class='rh' colspan='"+(SLOTS.length+1)+"'>"+esc(rm.name)+"</td></tr>";
+    S.layout.tables.filter(t=>t.room===rm.id).forEach(t=>{
+      h+="<tr><td class='nm'>"+esc(t.name)+" <span style='color:var(--mute);font-weight:400'>("+t.seats+")</span></td>";
+      SLOTS.forEach(m=>{const b=occ(t.id,m).busy;h+="<td class='"+(b?"b":"")+(m===S.time?" now":"")+"' data-m='"+m+"' title='"+(b?esc(b.name+" · "+b.pax):"frei")+"'></td>";});
+      h+="</tr>";
+    });
   });
   el.innerHTML=h+"</table>";
 }
@@ -372,6 +413,7 @@ function selectRes(id){
   const r=resById(id);if(!r)return;
   S.sel=id;S.pick=tabsOf(id).slice();
   const m=mins(r.time);if(SLOTS.indexOf(m)>-1)S.time=m;
+  const f=S.pick[0]&&roomOf(S.pick[0]);if(f)S.room=f;
   render();
 }
 ["l1","l2"].forEach(id=>{
@@ -381,6 +423,13 @@ function selectRes(id){
     const c=e.target.closest(".card");if(c)selectRes(c.dataset.id);
   });
   $(id).addEventListener("dragstart",e=>{const c=e.target.closest(".card");if(c)e.dataTransfer.setData("text/plain",c.dataset.id);});
+});
+$("rooms").addEventListener("click",e=>{
+  if(e.target.closest("#addroom")){
+    const n=prompt("Name des neuen Raums:");if(!n||!n.trim())return;
+    const id="r"+Date.now();S.layout.rooms.push({id,name:n.trim().slice(0,24),pre:n.trim().charAt(0).toUpperCase()});S.room=id;S.etab=null;saveLayout();render();return;
+  }
+  const b=e.target.closest("[data-r]");if(b){S.room=b.dataset.r;S.etab=null;render();}
 });
 $("floor").addEventListener("click",e=>{
   const tb=e.target.closest(".tb");if(!tb)return;
@@ -415,18 +464,18 @@ $("floor").addEventListener("pointerdown",e=>{
   try{tb.setPointerCapture(e.pointerId);}catch(_){}
 });
 $("floor").addEventListener("pointermove",e=>{
-  if(!drag)return;const sz=tsize(drag.t);
-  const x=(e.clientX-drag.r.left)/drag.r.width*100-drag.ox,y=(e.clientY-drag.r.top)/drag.r.width*100-drag.oy;
-  drag.t.x=Math.round(Math.max(0,Math.min(100-sz.w,x))*10)/10;drag.t.y=Math.round(Math.max(0,Math.min(H-sz.h,y))*10)/10;drag.moved=true;
+  if(!drag)return;
+  drag.t.x=(e.clientX-drag.r.left)/drag.r.width*100-drag.ox;drag.t.y=(e.clientY-drag.r.top)/drag.r.width*100-drag.oy;clamp(drag.t);drag.moved=true;
   drag.tb.style.left=drag.t.x+"%";drag.tb.style.top=(drag.t.y/H*100)+"%";
 });
 function endDrag(){if(drag&&drag.moved){saveLayout();render();}drag=null;}
 $("floor").addEventListener("pointerup",endDrag);$("floor").addEventListener("pointercancel",endDrag);
 $("addt").onclick=()=>{
-  const n=S.layout.tables.length+1;let id="t"+Date.now();
-  S.layout.tables.push({id,name:"T"+n,seats:4,x:42,y:26,shape:"rect"});S.etab=id;saveLayout();render();
+  const rm=S.layout.rooms.find(r=>r.id===S.room);
+  const n=S.layout.tables.filter(t=>t.room===S.room).length+1;let id="t"+Date.now();
+  S.layout.tables.push({id,name:((rm&&rm.pre)||"T")+n,seats:2,x:42,y:26,shape:"square",room:S.room});S.etab=id;saveLayout();render();
 };
-function upd(fn){const t=S.layout.tables.find(x=>x.id===S.etab);if(t){fn(t);saveLayout();renderFloor();renderStats();renderTL();}}
+function upd(fn){const t=S.layout.tables.find(x=>x.id===S.etab);if(t){fn(t);clamp(t);saveLayout();renderRooms();renderFloor();renderStats();renderTL();}}
 $("ename").oninput=e=>upd(t=>t.name=e.target.value.slice(0,10)||t.name);
 $("eseats").oninput=e=>upd(t=>t.seats=Math.max(1,Math.min(30,+e.target.value||t.seats)));
 $("eshape").onchange=e=>upd(t=>t.shape=e.target.value);
@@ -434,7 +483,18 @@ $("edel").onclick=()=>{
   const t=S.layout.tables.find(x=>x.id===S.etab);if(!t||!confirm("Tisch "+t.name+" löschen?"))return;
   S.layout.tables=S.layout.tables.filter(x=>x.id!==t.id);S.etab=null;saveLayout();render();
 };
-$("ereset").onclick=()=>{if(confirm("Standardplan wiederherstellen? Die eigene Anordnung geht verloren.")){S.layout=defaultLayout();S.etab=null;saveLayout();render();}};
+$("rren").onclick=()=>{
+  const rm=S.layout.rooms.find(r=>r.id===S.room);const n=prompt("Neuer Name für den Raum:",rm.name);
+  if(n&&n.trim()){rm.name=n.trim().slice(0,24);saveLayout();render();}
+};
+$("rdel").onclick=()=>{
+  if(S.layout.rooms.length<2){alert("Mindestens ein Raum muss bleiben.");return;}
+  const rm=S.layout.rooms.find(r=>r.id===S.room);
+  if(!confirm("Raum \""+rm.name+"\" mit allen Tischen löschen?"))return;
+  S.layout.tables=S.layout.tables.filter(t=>t.room!==rm.id);S.layout.rooms=S.layout.rooms.filter(r=>r.id!==rm.id);
+  S.room=S.layout.rooms[0].id;S.etab=null;saveLayout();render();
+};
+$("ereset").onclick=()=>{if(confirm("Standardplan wiederherstellen? Die eigene Anordnung geht verloren.")){S.layout=defaultLayout();S.room="r1";S.etab=null;saveLayout();render();}};
 
 /* walk-in */
 $("wt").innerHTML=SLOTS.map(m=>"<option value='"+hhmm(m)+"'>"+hhmm(m)+"</option>").join("");
